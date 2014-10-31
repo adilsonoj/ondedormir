@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+        <script type="text/javascript" charset="utf-8" src="jquery/jquery-2.1.1.js"></script>
+        <script type="text/javascript" charset="utf-8" src="jquery/jquery.mobile-1.4.2.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.2.min.css"/>
+        <script type="text/javascript" charset="utf-8"></script>
+        <head>
+        <title>Onde Dormir</title>
+        <script>
+        
+       document.addEventListener("deviceready", onDeviceReady, false);
+
+   
+        function onDeviceReady() {
+            
+        }
+
+            
+            $(document).ready(function(){
+                 $("#btn1").click(function(event){
+                    event.preventDefault();
+                            var neighbourhood = $('#neighbourhood').val();
+                            var url = "http://api.riodatamine.com.br/rest/request-token?app-id=cfbe7f6abd2df8191b3f8f7a12610f2d&app-secret=zhr2e-kxw7p-jy01e";
+
+                            $("#content").append("<ul></ul>");
+
+                            var permissao = $.get( url, function() {
+                               
+                                $("<li></li>").html(permissao.getResponseHeader('X-Access-Token')).appendTo("#content ul");
+                            })
+
+                        .done(function() {
+
+                            $.ajaxSetup({
+                              headers : {
+                                'Authorization' : permissao.getResponseHeader('X-Access-Token')
+                              }
+                            });
+
+                            var connection = $.getJSON( "http://api.riodatamine.com.br/rest/visitar-rio/onde-dormir?format=json&neighbourhood="+neighbourhood, function(data) {
+                                    alert(data.results.length+" Resultado encontrado!");
+
+                                    $.each( data.results, function( key, val ) {
+                                        //$(".nome").append(key +" <b>"+ val.name + "</b> "+ val.geoResult.address +"</br>");
+                                         $(".neighbourhood").html("<h1>"+ data.searchParameters.neighbourhood+"</h1>");
+                                        $("<li></li>").html("<b>"+val.name + "</b> "+ val.geoResult.address +"</br>" + val.description.text +"</br>").appendTo("#content ul");
+                                       
+                                    });  
+                            });
+                        })
+                        
+                        .fail(function() {
+                        alert( "error" );
+                        })
+                        .always(function() {
+                        alert( "finalizado" );
+                        });         
+                });                            
+            });
+            
+
+
+            
+                                     
+                  
+</script>
+</head>
+<body>
+<div data-role="page" id="main">
+
+     <form id="form" method="get">
+            <div class="form-element">
+                <input type='search' name="neighbourhood" id="neighbourhood">
+                <input type='submit' value='OK' id="btn1"/>
+            </div>
+    <div class="neighbourhood"></div>
+    <div id="content" data-role="content"></div>
+
+
+</div>
+</body>
+</html>
